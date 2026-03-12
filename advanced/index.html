@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bean &amp; Brew — Coffee Shop</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo">Bean &amp; Brew</a>
+        <ul class="nav-links">
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#story">Story</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+          <li><a href="#reservation">Reserve</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="hero" class="hero">
+      <div class="hero-content">
+        <h1 class="fade-in">Bean &amp; Brew</h1>
+        <p class="fade-in delay-1">
+          Specialty coffee &amp; artisan pastries — Portland, OR
+        </p>
+        <a href="#menu" class="btn fade-in delay-2">Explore the Menu</a>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span class="chevron"></span>
+      </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+      <div class="stats-container">
+        <div class="stat">
+          <span class="stat-number">8</span>
+          <span class="stat-label">Years Open</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">120k+</span>
+          <span class="stat-label">Coffees Served</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">15</span>
+          <span class="stat-label">Bean Origins</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">4.9★</span>
+          <span class="stat-label">Average Rating</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu (CSS-only tabs via :target) -->
+    <section id="menu" class="section">
+      <h2 class="section-title">Our Menu</h2>
+      <p class="section-subtitle">Tap a category to explore</p>
+
+      <div class="tabs">
+        <a href="#tab-coffee" class="tab-link">Coffee</a>
+        <a href="#tab-pastries" class="tab-link">Pastries</a>
+        <a href="#tab-specials" class="tab-link">Specials</a>
+      </div>
+
+      <!-- Tab: Coffee (default visible) -->
+      <div id="tab-coffee" class="tab-panel">
+        <div class="menu-grid">
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/espresso2/400/300"
+                alt="Espresso"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Espresso</h3>
+              <p>Single-origin, pulled to perfection.</p>
+              <span class="price">$3.00</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/cappuccino3/400/300"
+                alt="Cappuccino"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Cappuccino</h3>
+              <p>Double shot with velvety microfoam.</p>
+              <span class="price">$4.00</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/pourover/400/300"
+                alt="Pour Over"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Pour Over</h3>
+              <p>Hand-poured, single cup, full flavor.</p>
+              <span class="price">$4.50</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/coldbrew2/400/300"
+                alt="Cold Brew"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Cold Brew</h3>
+              <p>18-hour steeped, smooth and refreshing.</p>
+              <span class="price">$4.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Pastries -->
+      <div id="tab-pastries" class="tab-panel">
+        <div class="menu-grid">
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/croissant3/400/300"
+                alt="Croissant"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Butter Croissant</h3>
+              <p>Flaky, golden, hand-laminated daily.</p>
+              <span class="price">$2.50</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/muffin2/400/300"
+                alt="Muffin"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Blueberry Muffin</h3>
+              <p>Bursting with Oregon blueberries.</p>
+              <span class="price">$3.00</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/cinnamonroll/400/300"
+                alt="Cinnamon Roll"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Cinnamon Roll</h3>
+              <p>Warm, gooey, cream cheese glaze.</p>
+              <span class="price">$3.50</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/bananabread/400/300"
+                alt="Banana Bread"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Banana Bread</h3>
+              <p>Moist, nutty, with a hint of cinnamon.</p>
+              <span class="price">$3.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Specials -->
+      <div id="tab-specials" class="tab-panel">
+        <div class="menu-grid">
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/matcha3/400/300"
+                alt="Matcha Latte"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Matcha Latte</h3>
+              <p>Ceremonial-grade, whisked with oat milk.</p>
+              <span class="price">$5.00</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/lavender/400/300"
+                alt="Lavender Honey Latte"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Lavender Honey Latte</h3>
+              <p>Floral, sweet, uniquely Portland.</p>
+              <span class="price">$5.50</span>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-img">
+              <img
+                src="https://picsum.photos/seed/affogato3/400/300"
+                alt="Affogato"
+              />
+            </div>
+            <div class="menu-card-body">
+              <h3>Affogato</h3>
+              <p>Espresso poured over vanilla gelato.</p>
+              <span class="price">$5.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="section gallery-section">
+      <h2 class="section-title">Gallery</h2>
+      <p class="section-subtitle">A peek inside Bean &amp; Brew</p>
+      <div class="gallery-grid">
+        <div class="gallery-item span-2">
+          <img
+            src="https://picsum.photos/seed/cafeinterior/800/500"
+            alt="Café interior"
+          />
+          <div class="gallery-overlay"><span>Our Space</span></div>
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://picsum.photos/seed/latteart2/400/400"
+            alt="Latte art"
+          />
+          <div class="gallery-overlay"><span>Latte Art</span></div>
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://picsum.photos/seed/beans3/400/400"
+            alt="Coffee beans"
+          />
+          <div class="gallery-overlay"><span>Fresh Beans</span></div>
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://picsum.photos/seed/pastrycase/400/400"
+            alt="Pastry case"
+          />
+          <div class="gallery-overlay"><span>Pastry Case</span></div>
+        </div>
+        <div class="gallery-item span-2">
+          <img
+            src="https://picsum.photos/seed/barista3/800/500"
+            alt="Barista at work"
+          />
+          <div class="gallery-overlay"><span>Our Baristas</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Story / Timeline -->
+    <section id="story" class="section">
+      <h2 class="section-title">Our Journey</h2>
+      <p class="section-subtitle">From cart to café and beyond</p>
+
+      <div class="timeline">
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h3>2018</h3>
+            <p>
+              Started as a one-person espresso cart on SW 3rd Avenue with a
+              dream and a single-group La Marzocca.
+            </p>
+          </div>
+        </div>
+        <div class="timeline-item right">
+          <div class="timeline-content">
+            <h3>2019</h3>
+            <p>
+              Opened our first brick-and-mortar shop on Maple Street. Hired our
+              first barista and baker.
+            </p>
+          </div>
+        </div>
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h3>2021</h3>
+            <p>
+              Launched our in-house roastery — sourcing directly from farms in
+              Colombia, Ethiopia, and Guatemala.
+            </p>
+          </div>
+        </div>
+        <div class="timeline-item right">
+          <div class="timeline-content">
+            <h3>2023</h3>
+            <p>
+              Won Portland's Best Coffee Shop award. Expanded seating with a
+              cozy outdoor patio.
+            </p>
+          </div>
+        </div>
+        <div class="timeline-item left">
+          <div class="timeline-content">
+            <h3>2025</h3>
+            <p>
+              Introduced our subscription box — single-origin beans shipped
+              fresh to your door every month.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="section testimonials-section">
+      <h2 class="section-title">What People Say</h2>
+      <p class="section-subtitle">Real reviews from our regulars</p>
+
+      <div class="testimonials-grid">
+        <blockquote class="testimonial">
+          <p>
+            "The best cappuccino in Portland — hands down. I've tried them all
+            and nothing compares."
+          </p>
+          <cite>— Maria S.</cite>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p>
+            "Their cinnamon rolls are dangerously good. I have to limit myself
+            to one per visit (it's hard)."
+          </p>
+          <cite>— James T.</cite>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p>
+            "Cozy vibe, great music, fast Wi-Fi. Bean &amp; Brew is my second
+            office."
+          </p>
+          <cite>— Aisha K.</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- Reservation -->
+    <section id="reservation" class="section reservation-section">
+      <h2 class="section-title">Reserve a Table</h2>
+      <p class="section-subtitle">For groups of 4 or more — book ahead</p>
+
+      <form class="reservation-form" action="#" method="post" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Jane Doe"
+              required
+              minlength="2"
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="jane@email.com"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="(503) 555-0172"
+            />
+          </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required />
+          </div>
+          <div class="form-group">
+            <label for="time">Time</label>
+            <input type="time" id="time" name="time" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Seating Preference</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="seating" value="indoor" checked />
+              <span class="radio-custom"></span>
+              Indoor
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="seating" value="outdoor" />
+              <span class="radio-custom"></span>
+              Outdoor Patio
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="seating" value="any" />
+              <span class="radio-custom"></span>
+              No Preference
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="notes">Special Requests</label>
+          <textarea
+            id="notes"
+            name="notes"
+            rows="3"
+            placeholder="Allergies, celebrations, accessibility needs…"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-full">Book My Table</button>
+      </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Bean &amp; Brew</h3>
+          <p>
+            Specialty coffee &amp; pastries since 2018. Roasted in-house, served
+            with love.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h3>Hours</h3>
+          <p>Mon – Fri: 7 AM – 7 PM</p>
+          <p>Sat – Sun: 8 AM – 5 PM</p>
+        </div>
+        <div class="footer-col">
+          <h3>Location</h3>
+          <p>42 Maple Street</p>
+          <p>Portland, OR 97201</p>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <p>hello@beanandbrew.com</p>
+          <p>(503) 555-0172</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Bean &amp; Brew. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

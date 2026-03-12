@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bean &amp; Brew — Coffee Shop</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- ===== HAMBURGER NAV (CSS-only checkbox hack) ===== -->
+    <input
+      type="checkbox"
+      id="nav-toggle"
+      class="nav-toggle"
+      aria-hidden="true"
+    />
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo">Bean &amp; Brew</a>
+        <label
+          for="nav-toggle"
+          class="hamburger"
+          aria-label="Toggle navigation"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </label>
+        <ul class="nav-links">
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#story">Story</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ===== PARALLAX HERO ===== -->
+    <div class="parallax-wrapper">
+      <section id="hero" class="hero">
+        <div class="parallax-bg" aria-hidden="true"></div>
+        <div class="parallax-mid" aria-hidden="true"></div>
+        <div class="hero-content">
+          <h1 class="gradient-text">Bean &amp; Brew</h1>
+          <p class="hero-sub">
+            Specialty coffee &amp; artisan pastries — Portland, OR
+          </p>
+          <a href="#menu" class="btn glow-btn">Explore the Menu</a>
+        </div>
+        <div class="scroll-indicator" aria-hidden="true">
+          <div class="mouse">
+            <div class="wheel"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== GLASS STATS BAR ===== -->
+    <section class="glass-stats" id="stats">
+      <div class="glass-card" id="glass-hero-card">
+        <div class="stat">
+          <span class="stat-number">8</span>
+          <span class="stat-label">Years Open</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">120k+</span>
+          <span class="stat-label">Coffees Served</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">15</span>
+          <span class="stat-label">Bean Origins</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">4.9★</span>
+          <span class="stat-label">Rating</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MENU — 3D FLIP CARDS ===== -->
+    <section id="menu" class="section reveal">
+      <h2 class="section-title">Our Menu</h2>
+      <p class="section-subtitle">Hover a card to see details</p>
+
+      <div class="flip-grid">
+        <div class="flip-card">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <img
+                src="https://picsum.photos/seed/espresso5/400/500"
+                alt="Espresso"
+              />
+              <h3>Espresso</h3>
+            </div>
+            <div class="flip-back">
+              <h3>Espresso</h3>
+              <p>
+                Single-origin, pulled to perfection. Bold, rich crema, smooth
+                finish.
+              </p>
+              <span class="price">$3.00</span>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <img
+                src="https://picsum.photos/seed/cappuccino5/400/500"
+                alt="Cappuccino"
+              />
+              <h3>Cappuccino</h3>
+            </div>
+            <div class="flip-back">
+              <h3>Cappuccino</h3>
+              <p>
+                Double shot layered with velvety microfoam. Classic Italian
+                comfort.
+              </p>
+              <span class="price">$4.00</span>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <img
+                src="https://picsum.photos/seed/pourover2/400/500"
+                alt="Pour Over"
+              />
+              <h3>Pour Over</h3>
+            </div>
+            <div class="flip-back">
+              <h3>Pour Over</h3>
+              <p>
+                Hand-poured, one cup at a time. Highlights the bean's natural
+                character.
+              </p>
+              <span class="price">$4.50</span>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <img
+                src="https://picsum.photos/seed/coldbrew5/400/500"
+                alt="Cold Brew"
+              />
+              <h3>Cold Brew</h3>
+            </div>
+            <div class="flip-back">
+              <h3>Cold Brew</h3>
+              <p>
+                Steeped 18 hours for a smooth, low-acid iced coffee with
+                chocolate notes.
+              </p>
+              <span class="price">$4.00</span>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <img
+                src="https://picsum.photos/seed/matcha5/400/500"
+                alt="Matcha Latte"
+              />
+              <h3>Matcha Latte</h3>
+            </div>
+            <div class="flip-back">
+              <h3>Matcha Latte</h3>
+              <p>
+                Ceremonial-grade matcha whisked with oat milk. Earthy, creamy,
+                energizing.
+              </p>
+              <span class="price">$5.00</span>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <img
+                src="https://picsum.photos/seed/croissant5/400/500"
+                alt="Croissant"
+              />
+              <h3>Butter Croissant</h3>
+            </div>
+            <div class="flip-back">
+              <h3>Butter Croissant</h3>
+              <p>
+                128 layers of hand-laminated pastry, golden and flaky every
+                morning.
+              </p>
+              <span class="price">$2.50</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GALLERY — CSS-ONLY LIGHTBOX ===== -->
+    <section id="gallery" class="section reveal">
+      <h2 class="section-title">Gallery</h2>
+      <p class="section-subtitle">Click a photo to enlarge</p>
+
+      <div class="masonry-grid">
+        <a href="#lightbox-1" class="masonry-item tall">
+          <img
+            src="https://picsum.photos/seed/cafeinterior2/600/900"
+            alt="Café interior"
+          />
+        </a>
+        <a href="#lightbox-2" class="masonry-item">
+          <img
+            src="https://picsum.photos/seed/latteart5/600/600"
+            alt="Latte art"
+          />
+        </a>
+        <a href="#lightbox-3" class="masonry-item">
+          <img
+            src="https://picsum.photos/seed/beans5/600/600"
+            alt="Coffee beans"
+          />
+        </a>
+        <a href="#lightbox-4" class="masonry-item wide">
+          <img
+            src="https://picsum.photos/seed/barista5/900/600"
+            alt="Barista at work"
+          />
+        </a>
+        <a href="#lightbox-5" class="masonry-item">
+          <img
+            src="https://picsum.photos/seed/pastrycase2/600/600"
+            alt="Pastry case"
+          />
+        </a>
+        <a href="#lightbox-6" class="masonry-item tall">
+          <img
+            src="https://picsum.photos/seed/coffeepour2/600/900"
+            alt="Coffee pour"
+          />
+        </a>
+      </div>
+
+      <!-- Lightbox overlays (CSS :target) -->
+      <div id="lightbox-1" class="lightbox">
+        <a href="#gallery" class="lightbox-close">&times;</a>
+        <img
+          src="https://picsum.photos/seed/cafeinterior2/1200/800"
+          alt="Café interior"
+        />
+      </div>
+      <div id="lightbox-2" class="lightbox">
+        <a href="#gallery" class="lightbox-close">&times;</a>
+        <img
+          src="https://picsum.photos/seed/latteart5/1200/800"
+          alt="Latte art"
+        />
+      </div>
+      <div id="lightbox-3" class="lightbox">
+        <a href="#gallery" class="lightbox-close">&times;</a>
+        <img
+          src="https://picsum.photos/seed/beans5/1200/800"
+          alt="Coffee beans"
+        />
+      </div>
+      <div id="lightbox-4" class="lightbox">
+        <a href="#gallery" class="lightbox-close">&times;</a>
+        <img
+          src="https://picsum.photos/seed/barista5/1200/800"
+          alt="Barista at work"
+        />
+      </div>
+      <div id="lightbox-5" class="lightbox">
+        <a href="#gallery" class="lightbox-close">&times;</a>
+        <img
+          src="https://picsum.photos/seed/pastrycase2/1200/800"
+          alt="Pastry case"
+        />
+      </div>
+      <div id="lightbox-6" class="lightbox">
+        <a href="#gallery" class="lightbox-close">&times;</a>
+        <img
+          src="https://picsum.photos/seed/coffeepour2/1200/800"
+          alt="Coffee pour"
+        />
+      </div>
+    </section>
+
+    <!-- ===== STORY / TIMELINE ===== -->
+    <section id="story" class="section reveal">
+      <h2 class="section-title">Our Journey</h2>
+      <p class="section-subtitle">From cart to café and beyond</p>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <h3>2018</h3>
+            <p>Started as a one-person espresso cart on SW 3rd Avenue.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <h3>2019</h3>
+            <p>Opened our first brick-and-mortar shop on Maple Street.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <h3>2021</h3>
+            <p>Launched our in-house roastery — direct farm sourcing.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <h3>2023</h3>
+            <p>Won Portland's Best Coffee Shop. Expanded with a patio.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <h3>2025</h3>
+            <p>Subscription box launched — fresh beans delivered monthly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS — SCROLL-SNAP CAROUSEL ===== -->
+    <section id="reviews" class="section reveal">
+      <h2 class="section-title">What People Say</h2>
+      <p class="section-subtitle">Scroll sideways through real reviews</p>
+
+      <div class="carousel">
+        <blockquote class="carousel-card">
+          <p>
+            "The best cappuccino in Portland — hands down. Nothing compares."
+          </p>
+          <cite>— Maria S.</cite>
+        </blockquote>
+        <blockquote class="carousel-card">
+          <p>
+            "Their cinnamon rolls are dangerously good. I limit myself to one
+            per visit."
+          </p>
+          <cite>— James T.</cite>
+        </blockquote>
+        <blockquote class="carousel-card">
+          <p>
+            "Cozy vibe, great music, fast Wi-Fi. Bean &amp; Brew is my second
+            office."
+          </p>
+          <cite>— Aisha K.</cite>
+        </blockquote>
+        <blockquote class="carousel-card">
+          <p>
+            "The pour-over changed my life. I never knew coffee could taste this
+            good."
+          </p>
+          <cite>— David L.</cite>
+        </blockquote>
+        <blockquote class="carousel-card">
+          <p>
+            "My kids love the hot chocolate and I love the lavender latte.
+            Win-win."
+          </p>
+          <cite>— Priya R.</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT — FLOATING LABELS ===== -->
+    <section id="contact" class="section reveal">
+      <h2 class="section-title">Get in Touch</h2>
+      <p class="section-subtitle">We'd love to hear from you</p>
+
+      <form class="contact-form" action="#" method="post">
+        <div class="form-row">
+          <div class="float-group">
+            <input type="text" id="name" name="name" placeholder=" " required />
+            <label for="name">Full Name</label>
+          </div>
+          <div class="float-group">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder=" "
+              required
+            />
+            <label for="email">Email Address</label>
+          </div>
+        </div>
+        <div class="float-group">
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            placeholder=" "
+            required
+          />
+          <label for="subject">Subject</label>
+        </div>
+        <div class="float-group">
+          <textarea
+            id="message"
+            name="message"
+            rows="4"
+            placeholder=" "
+            required
+          ></textarea>
+          <label for="message">Your Message</label>
+        </div>
+        <button type="submit" class="btn glow-btn full-width">
+          Send Message
+        </button>
+      </form>
+
+      <div class="contact-info-row">
+        <div class="contact-block">
+          <h3>Visit Us</h3>
+          <p>42 Maple Street<br />Portland, OR 97201</p>
+        </div>
+        <div class="contact-block">
+          <h3>Hours</h3>
+          <p>Mon–Fri: 7 AM – 7 PM<br />Sat–Sun: 8 AM – 5 PM</p>
+        </div>
+        <div class="contact-block">
+          <h3>Reach Out</h3>
+          <p>hello@beanandbrew.com<br />(503) 555-0172</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER WITH ANIMATED WAVE ===== -->
+    <footer class="footer">
+      <div class="wave-container" aria-hidden="true">
+        <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
+          <path
+            d="M0,64 C360,120 720,0 1080,64 C1260,96 1380,80 1440,64 L1440,120 L0,120 Z"
+          ></path>
+        </svg>
+      </div>
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Bean &amp; Brew</h3>
+          <p>
+            Specialty coffee &amp; pastries since 2018. Roasted in-house, served
+            with love.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h3>Hours</h3>
+          <p>Mon – Fri: 7 AM – 7 PM</p>
+          <p>Sat – Sun: 8 AM – 5 PM</p>
+        </div>
+        <div class="footer-col">
+          <h3>Location</h3>
+          <p>42 Maple Street</p>
+          <p>Portland, OR 97201</p>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <p>hello@beanandbrew.com</p>
+          <p>(503) 555-0172</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Bean &amp; Brew. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Minimal JS: cursor-responsive glass highlight only -->
+    <script>
+      document
+        .getElementById("glass-hero-card")
+        .addEventListener("mousemove", function (e) {
+          const r = this.getBoundingClientRect();
+          this.style.setProperty(
+            "--mx",
+            ((e.clientX - r.left) / r.width) * 100 + "%",
+          );
+          this.style.setProperty(
+            "--my",
+            ((e.clientY - r.top) / r.height) * 100 + "%",
+          );
+        });
+    </script>
+  </body>
+</html>

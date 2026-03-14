@@ -409,21 +409,8 @@ a {
   display: block;
 }
 
-/* When any tab IS targeted, hide the first-of-type default */
-.tab-panel:target ~ .tab-panel:first-of-type,
-.tab-panel:not(:first-of-type):target ~ .tab-panel:first-of-type {
-  /* already handled since non-targeted panels are display:none */
-}
-
-/* Override: if a later tab is targeted, ensure first tab hides.
-   We use the general sibling combinator trick. When tab-pastries or
-   tab-specials is :target, the first panel is a preceding sibling so
-   it won't match :target and stays hidden (display:none).
-   Actually, since .tab-panel { display:none } and .tab-panel:target
-   { display:block }, preceding siblings simply aren't :target so they
-   stay hidden. The only subtlety is the first-of-type fallback.
-   We solve it by re-hiding when the URL has any #tab- fragment: */
-.tab-panel:target ~ #tab-coffee {
+/* Hide fallback first tab when a non-first tab is targeted */
+#menu:has(.tab-panel:not(:first-of-type):target) .tab-panel:first-of-type {
   display: none;
 }
 

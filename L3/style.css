@@ -148,8 +148,8 @@ a {
 .hero {
   background:
     linear-gradient(rgba(62, 39, 35, 0.6), rgba(62, 39, 35, 0.6)),
-    url("https://picsum.photos/seed/coffeebeans/1400/700") center / cover
-      no-repeat;
+    url("https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1600&q=80")
+      center / cover no-repeat;
   padding: 0;
   max-width: none;
 }

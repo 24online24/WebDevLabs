@@ -28,6 +28,19 @@
   --transition: 0.3s ease;
 }
 
+body.dark-theme {
+  --primary: #cebfb8;
+  --primary-light: #eaded8;
+  --accent: #f8b458;
+  --accent-light: #f7d8ac;
+  --bg: #1f1a18;
+  --bg-alt: #2b2421;
+  --text: #f5e8e1;
+  --text-light: #dcc6bb;
+  --white: #2f2724;
+  --shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
 /* ---------- Reset & Base ---------- */
 *,
 *::before,
@@ -42,6 +55,9 @@ body {
   color: var(--text);
   background-color: var(--bg);
   line-height: 1.7;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
 }
 
 img {
@@ -144,6 +160,27 @@ a {
   color: var(--white);
 }
 
+.theme-toggle {
+  background: transparent;
+  color: var(--accent-light);
+  border: 1px solid var(--accent-light);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    background-color var(--transition);
+}
+
+.theme-toggle:hover {
+  color: var(--white);
+  border-color: var(--white);
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
 /* ---------- Hero ---------- */
 .hero {
   background:
@@ -183,6 +220,43 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 28px;
+}
+
+.menu-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.filter-btn {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition);
+}
+
+.filter-btn:hover {
+  transform: translateY(-1px);
+}
+
+.filter-btn.active {
+  background-color: var(--primary);
+  color: var(--bg);
+}
+
+.menu-status {
+  text-align: center;
+  color: var(--text-light);
+  grid-column: 1 / -1;
 }
 
 .menu-card {
@@ -318,6 +392,28 @@ a {
   width: 100%;
   padding: 14px;
   font-size: 1.05rem;
+}
+
+.form-status {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  min-height: 22px;
+}
+
+.form-status.success {
+  color: #2e7d32;
+}
+
+.form-status.error {
+  color: #c62828;
+}
+
+body.dark-theme .form-status.success {
+  color: #8dda92;
+}
+
+body.dark-theme .form-status.error {
+  color: #ff8a80;
 }
 
 /* ---------- Footer ---------- */

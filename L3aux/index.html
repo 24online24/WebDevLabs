@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bean &amp; Brew — Coffee Shop</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo">Bean &amp; Brew</a>
+        <ul class="nav-links">
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#reservation">Reserve</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button id="theme-toggle" class="theme-toggle" type="button">
+          Toggle Theme
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <div class="hero-overlay">
+        <h1>Crafted with Passion,<br />Served with Love</h1>
+        <p>Specialty coffee &amp; fresh pastries in the heart of Portland</p>
+        <a href="#menu" class="btn">View Our Menu</a>
+      </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="section">
+      <h2 class="section-title">Our Menu</h2>
+      <p class="section-subtitle">
+        Handcrafted drinks &amp; baked-fresh-daily treats
+      </p>
+
+      <aside class="concept-panel" aria-live="polite">
+        <h3>JS Concept Demo</h3>
+        <div class="concept-grid">
+          <p>
+            <strong>shopName (type):</strong> <span id="demo-shop-type">-</span>
+          </p>
+          <p>
+            <strong>maxAdvanceDays (type):</strong>
+            <span id="demo-days-type">-</span>
+          </p>
+          <p>
+            <strong>Active category:</strong> <span id="demo-category">-</span>
+          </p>
+          <p>
+            <strong>Visible items:</strong> <span id="demo-visible">-</span>
+          </p>
+          <p>
+            <strong>Total items (JSON):</strong> <span id="demo-total">-</span>
+          </p>
+          <p><strong>Theme:</strong> <span id="demo-theme">-</span></p>
+        </div>
+        <p class="concept-event">
+          <strong>Last event:</strong> <span id="demo-event">App started</span>
+        </p>
+      </aside>
+
+      <div class="menu-controls" id="menu-controls"></div>
+
+      <div class="menu-grid" id="menu-grid" aria-live="polite">
+        <p class="menu-status">Loading menu...</p>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about">
+      <div class="about-container">
+        <div class="about-image">
+          <img
+            src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80"
+            alt="Barista carefully pouring espresso at the coffee bar"
+          />
+        </div>
+        <div class="about-text">
+          <h2>Our Story</h2>
+          <p>
+            Bean &amp; Brew started as a tiny cart on SW 3rd Avenue back in
+            2018. What began with a single espresso machine and a dream has
+            grown into Portland's favorite neighborhood coffee house.
+          </p>
+          <p>
+            We source our beans directly from family farms in Colombia,
+            Ethiopia, and Guatemala, then roast them in small batches at our
+            in-house roastery. Every cup tells a story — from seed to sip.
+          </p>
+          <p>
+            Our pastries are baked fresh each morning by our in-house baker
+            using local, organic ingredients. We believe great food and great
+            coffee deserve each other.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reservation Section -->
+    <section id="reservation" class="section reservation">
+      <h2 class="section-title">Reserve a Table</h2>
+      <p class="section-subtitle">Book ahead for groups of 4 or more</p>
+
+      <form
+        class="reservation-form"
+        id="reservation-form"
+        action="#"
+        method="post"
+      >
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Jane Doe"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="jane@email.com"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required />
+          </div>
+          <div class="form-group">
+            <label for="time">Time</label>
+            <input type="time" id="time" name="time" required />
+          </div>
+          <div class="form-group">
+            <label for="guests">Guests</label>
+            <input
+              type="number"
+              id="guests"
+              name="guests"
+              min="1"
+              max="20"
+              placeholder="4"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="notes">Special Requests</label>
+          <textarea
+            id="notes"
+            name="notes"
+            rows="3"
+            placeholder="Allergies, celebrations, seating preference…"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn">Book Now</button>
+        <p class="form-status" id="reservation-status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+      <div class="footer-container">
+        <div class="footer-col">
+          <h3>Bean &amp; Brew</h3>
+          <p>Specialty coffee &amp; pastries since 2018.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Hours</h3>
+          <p>Mon – Fri: 7 AM – 7 PM</p>
+          <p>Sat – Sun: 8 AM – 5 PM</p>
+        </div>
+        <div class="footer-col">
+          <h3>Location</h3>
+          <p>42 Maple Street</p>
+          <p>Portland, OR 97201</p>
+        </div>
+        <div class="footer-col">
+          <h3>Connect</h3>
+          <p>hello@beanandbrew.com</p>
+          <p>(503) 555-0172</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Bean &amp; Brew. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>

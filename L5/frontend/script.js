@@ -1,6 +1,6 @@
 // App configuration values (strings and numbers).
 const shopName = "Bean & Brew";
-const menuDataUrl = "menu.json";
+const apiBaseUrl = "http://localhost:8000/api";
 const defaultCategory = "All";
 const maxAdvanceDays = 60;
 
@@ -26,15 +26,6 @@ function formatPrice(price) {
 function getCategories(items) {
   const uniqueCategories = [...new Set(items.map((item) => item.category))];
   return [defaultCategory, ...uniqueCategories];
-}
-
-// Filter logic for category buttons.
-function getFilteredItems(items, category) {
-  if (category === defaultCategory) {
-    return items;
-  }
-
-  return items.filter((item) => item.category === category);
 }
 
 // Template literal builds one card from a single menu object.
@@ -84,22 +75,31 @@ function renderFilterControls(categories) {
 }
 
 // Single source of truth for changing active filter + rerendering UI.
-function setFilter(category) {
+async function setFilter(category) {
   activeCategory = category;
   renderFilterControls(getCategories(menuItems));
-  renderMenu(getFilteredItems(menuItems, activeCategory));
+  menuGrid.innerHTML = '<p class="menu-status">Loading menu...</p>';
+
+  try {
+    const items = await fetchMenuData(activeCategory);
+    renderMenu(items);
+  } catch (error) {
+    menuGrid.innerHTML =
+      '<p class="menu-status">Menu unavailable right now. Please refresh and try again.</p>';
+    console.error(error);
+  }
 }
 
 // Event delegation: one click listener handles all filter buttons.
 function setupFilterEvents() {
-  menuControls.addEventListener("click", (event) => {
+  menuControls.addEventListener("click", async (event) => {
     const button = event.target.closest(".filter-btn");
     if (!button) {
       return;
     }
 
     const selectedCategory = button.dataset.category;
-    setFilter(selectedCategory);
+    await setFilter(selectedCategory);
   });
 }
 
@@ -108,6 +108,34 @@ function showReservationMessage(message, type) {
   reservationStatus.textContent = message;
   reservationStatus.classList.remove("success", "error");
   reservationStatus.classList.add(type);
+}
+
+function formatApiErrorDetail(detail) {
+  const fieldName = detail.loc?.[detail.loc.length - 1];
+  if (!fieldName) {
+    return detail.msg;
+  }
+
+  const label = fieldName.replaceAll("_", " ");
+  return `${label}: ${detail.msg}`;
+}
+
+async function getApiErrorMessage(response) {
+  try {
+    const data = await response.json();
+
+    if (Array.isArray(data.detail)) {
+      return data.detail.map(formatApiErrorDetail).join(" ");
+    }
+
+    if (typeof data.detail === "string") {
+      return data.detail;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  return "Unable to submit reservation right now. Please try again.";
 }
 
 // Validation function returns an error string or empty string when valid.
@@ -144,7 +172,7 @@ function validateReservation(formData) {
 
 // Submit event: prevent default form post, validate, then show feedback.
 function setupReservationForm() {
-  reservationForm.addEventListener("submit", (event) => {
+  reservationForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(reservationForm);
@@ -158,14 +186,44 @@ function setupReservationForm() {
     const customerName = formData.get("name");
     const reservationDate = formData.get("date");
     const reservationTime = formData.get("time");
-    const guests = formData.get("guests");
+    const guests = Number(formData.get("guests"));
+    const reservationPayload = {
+      contact_name: String(customerName).trim(),
+      contact_email: String(formData.get("email")).trim(),
+      date: reservationDate,
+      time: reservationTime,
+      guest_count: guests,
+      special_requests: String(formData.get("notes")).trim() || null,
+    };
 
-    showReservationMessage(
-      `Thanks, ${customerName}! Your table for ${guests} at ${shopName} is requested for ${reservationDate} at ${reservationTime}.`,
-      "success",
-    );
+    try {
+      const response = await fetch(`${apiBaseUrl}/reservations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reservationPayload),
+      });
 
-    reservationForm.reset();
+      if (response.status !== 201) {
+        const errorMessage = await getApiErrorMessage(response);
+        showReservationMessage(errorMessage, "error");
+        return;
+      }
+
+      const savedReservation = await response.json();
+      showReservationMessage(
+        `Thanks, ${customerName}! Reservation #${savedReservation.id} for ${guests} guests at ${shopName} is confirmed for ${reservationDate} at ${reservationTime}.`,
+        "success",
+      );
+      reservationForm.reset();
+    } catch (error) {
+      showReservationMessage(
+        "Unable to reach the reservation service right now. Please try again.",
+        "error",
+      );
+      console.error(error);
+    }
   });
 }
 
@@ -185,24 +243,38 @@ function setupThemeToggle() {
   });
 }
 
+function buildMenuUrl(category = defaultCategory) {
+  const url = new URL(`${apiBaseUrl}/menu`);
+
+  if (category !== defaultCategory) {
+    url.searchParams.set("category", category);
+  }
+
+  return url.toString();
+}
+
+async function fetchMenuData(category = defaultCategory) {
+  const response = await fetch(buildMenuUrl(category));
+  if (!response.ok) {
+    throw new Error("Unable to fetch menu data.");
+  }
+
+  const data = await response.json();
+  if (!Array.isArray(data)) {
+    throw new Error("Menu data format is invalid.");
+  }
+
+  return data;
+}
+
 // JSON data loading with fetch + async/await.
 async function loadMenuData() {
   try {
-    const response = await fetch(menuDataUrl);
-    if (!response.ok) {
-      throw new Error("Unable to fetch menu data.");
-    }
-
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error("Menu data format is invalid.");
-    }
-
-    menuItems = data;
+    menuItems = await fetchMenuData();
     const categories = getCategories(menuItems);
 
     renderFilterControls(categories);
-    renderMenu(getFilteredItems(menuItems, activeCategory));
+    renderMenu(menuItems);
   } catch (error) {
     menuGrid.innerHTML =
       '<p class="menu-status">Menu unavailable right now. Please refresh and try again.</p>';

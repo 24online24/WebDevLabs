@@ -249,12 +249,14 @@ function buildMenuUrl(category = defaultCategory) {
   if (category !== defaultCategory) {
     url.searchParams.set("category", category);
   }
-
+  console.log("Constructed menu URL:", url.toString());
   return url.toString();
 }
 
 async function fetchMenuData(category = defaultCategory) {
+  console.log(`Fetching menu data for category: ${category}`);
   const response = await fetch(buildMenuUrl(category));
+  console.log("Menu API response status:", response.status);
   if (!response.ok) {
     throw new Error("Unable to fetch menu data.");
   }
@@ -270,9 +272,12 @@ async function fetchMenuData(category = defaultCategory) {
 // JSON data loading with fetch + async/await.
 async function loadMenuData() {
   try {
+    console.log("Loading menu data...");
     menuItems = await fetchMenuData();
+    console.log("Menu data loaded:", menuItems);
     const categories = getCategories(menuItems);
 
+    console.log("Extracted categories:", categories);
     renderFilterControls(categories);
     renderMenu(menuItems);
   } catch (error) {

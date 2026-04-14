@@ -1,36 +1,48 @@
-import importlib
-import json
+import sys
 import unittest
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from sqlmodel import Session, select
+
+BACKEND_DIR = Path(__file__).resolve().parent
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+
+import main as backend_main
 
 
 class CoffeeShopApiTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.backend_dir = Path(__file__).resolve().parent
+        self.backend_dir = BACKEND_DIR
         self.menu_file = self.backend_dir / "_test_menu.json"
-        self.reservations_file = self.backend_dir / "_test_reservations.json"
+        self.database_file = self.backend_dir / "_test_coffee_shop.db"
         source_menu_file = self.backend_dir / "menu.json"
 
         self.menu_file.write_text(source_menu_file.read_text(encoding="utf-8"), encoding="utf-8")
-        self.reservations_file.write_text("[]\n", encoding="utf-8")
+        if self.database_file.exists():
+            self.database_file.unlink()
 
-        import main as backend_main
-
-        self.backend_main = importlib.reload(backend_main)
+        self.backend_main = backend_main
         self.backend_main.MENU_FILE = self.menu_file
-        self.backend_main.RESERVATIONS_FILE = self.reservations_file
+        self.backend_main.database.configure_engine(self.database_file)
 
         self.client_context = TestClient(self.backend_main.app)
         self.client = self.client_context.__enter__()
 
     def tearDown(self) -> None:
         self.client_context.__exit__(None, None, None)
+        self.backend_main.database.engine.dispose()
         if self.menu_file.exists():
             self.menu_file.unlink()
-        if self.reservations_file.exists():
-            self.reservations_file.unlink()
+        if self.database_file.exists():
+            self.database_file.unlink()
+
+    def test_startup_seeds_menu_items_into_database(self) -> None:
+        with Session(self.backend_main.database.engine) as session:
+            menu_items = session.exec(select(self.backend_main.MenuItem)).all()
+
+        self.assertEqual(len(menu_items), 8)
 
     def test_status_returns_counts(self) -> None:
         response = self.client.get("/api/status")
@@ -65,7 +77,7 @@ class CoffeeShopApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["detail"], "Menu item not found.")
 
-    def test_post_reservation_returns_201_and_persists_to_disk(self) -> None:
+    def test_post_reservation_returns_201_and_persists_to_database(self) -> None:
         payload = {
             "contact_name": "Jane Doe",
             "contact_email": "jane@example.com",
@@ -82,9 +94,11 @@ class CoffeeShopApiTests(unittest.TestCase):
         self.assertEqual(response_data["id"], 1)
         self.assertEqual(response_data["contact_name"], payload["contact_name"])
 
-        saved_reservations = json.loads(self.reservations_file.read_text(encoding="utf-8"))
+        with Session(self.backend_main.database.engine) as session:
+            saved_reservations = session.exec(select(self.backend_main.Reservation)).all()
+
         self.assertEqual(len(saved_reservations), 1)
-        self.assertEqual(saved_reservations[0]["contact_email"], payload["contact_email"])
+        self.assertEqual(saved_reservations[0].contact_email, payload["contact_email"])
 
     def test_post_reservation_rejects_invalid_guest_count(self) -> None:
         payload = {

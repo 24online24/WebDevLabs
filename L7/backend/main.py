@@ -6,17 +6,19 @@ from datetime import date, time
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query, status
+from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr
+from sqlalchemy import func
+from sqlmodel import Field, SQLModel, Session, select
+
+import database
 
 BASE_DIR = Path(__file__).resolve().parent
 MENU_FILE = BASE_DIR / "menu.json"
-RESERVATIONS_FILE = BASE_DIR / "reservations.json"
 
 
-class MenuItem(BaseModel):
-    id: int
+class MenuItemBase(SQLModel):
     name: str
     category: str
     price: float
@@ -26,7 +28,11 @@ class MenuItem(BaseModel):
     isFeatured: bool = False
 
 
-class ReservationRequest(BaseModel):
+class MenuItem(MenuItemBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+
+class ReservationBase(SQLModel):
     contact_name: str = Field(min_length=1, max_length=100)
     contact_email: EmailStr
     date: date
@@ -35,12 +41,12 @@ class ReservationRequest(BaseModel):
     special_requests: str | None = Field(default=None, max_length=500)
 
 
-class ReservationRecord(ReservationRequest):
-    id: int
+class Reservation(ReservationBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
 
 
-menu_items: list[MenuItem] = []
-reservations: list[ReservationRecord] = []
+class ReservationCreate(ReservationBase):
+    pass
 
 
 def read_json_file(path: Path, default_value: Any | None = None) -> Any:
@@ -54,42 +60,24 @@ def read_json_file(path: Path, default_value: Any | None = None) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_menu_items() -> list[MenuItem]:
+def seed_menu_items(session: Session) -> None:
+    existing_item = session.exec(select(MenuItem).limit(1)).first()
+    if existing_item is not None:
+        return
+
     raw_items = read_json_file(MENU_FILE)
-    return [MenuItem.model_validate(item) for item in raw_items]
-
-
-def load_reservations() -> list[ReservationRecord]:
-    raw_reservations = read_json_file(RESERVATIONS_FILE, default_value=[])
-    return [ReservationRecord.model_validate(item) for item in raw_reservations]
-
-
-def save_reservations() -> None:
-    serializable_reservations = [
-        reservation.model_dump(mode="json") for reservation in reservations
-    ]
-    RESERVATIONS_FILE.write_text(
-        json.dumps(serializable_reservations, indent=2) + "\n",
-        encoding="utf-8",
-    )
-
-
-def load_app_data() -> None:
-    global menu_items, reservations
-    menu_items = load_menu_items()
-    reservations = load_reservations()
-
-
-def next_reservation_id() -> int:
-    if not reservations:
-        return 1
-
-    return max(reservation.id for reservation in reservations) + 1
+    menu_items = [MenuItem.model_validate(item) for item in raw_items]
+    session.add_all(menu_items)
+    session.commit()
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    load_app_data()
+    SQLModel.metadata.create_all(database.engine)
+
+    with Session(database.engine) as session:
+        seed_menu_items(session)
+
     yield
 
 
@@ -111,49 +99,60 @@ app.add_middleware(
 
 
 @app.get("/api/status")
-def get_status() -> dict[str, Any]:
+def get_status(session: Session = Depends(database.get_session)) -> dict[str, Any]:
     # FastAPI automatically serializes regular Python dictionaries into JSON.
     return {
         "status": "ok",
-        "menu_count": len(menu_items),
-        "reservation_count": len(reservations),
+        "menu_count": len(session.exec(select(MenuItem)).all()),
+        "reservation_count": len(session.exec(select(Reservation)).all()),
     }
 
 
 @app.get("/api/menu", response_model=list[MenuItem])
-def get_menu(category: str | None = Query(default=None)) -> list[MenuItem]:
+def get_menu(
+    category: str | None = Query(default=None),
+    session: Session = Depends(database.get_session),
+) -> list[MenuItem]:
+    statement = select(MenuItem).order_by(MenuItem.id)
+
     if category is None:
-        return menu_items
+        return list(session.exec(statement).all())
 
     normalized_category = category.strip().casefold()
-    return [
-        item
-        for item in menu_items
-        if item.category.strip().casefold() == normalized_category
-    ]
+    filtered_statement = statement.where(
+        func.lower(MenuItem.category) == normalized_category
+    )
+    return list(session.exec(filtered_statement).all())
 
 
 @app.get("/api/menu/{item_id}", response_model=MenuItem)
-def get_menu_item(item_id: int) -> MenuItem:
-    for item in menu_items:
-        if item.id == item_id:
-            return item
+def get_menu_item(
+    item_id: int,
+    session: Session = Depends(database.get_session),
+) -> MenuItem:
+    item = session.get(MenuItem, item_id)
+    if item is not None:
+        return item
 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Menu item not found.")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Menu item not found.",
+    )
 
 
 @app.post(
     "/api/reservations",
-    response_model=ReservationRecord,
+    response_model=Reservation,
     status_code=status.HTTP_201_CREATED,
 )
-def create_reservation(reservation_request: ReservationRequest) -> ReservationRecord:
-    # FastAPI validates the incoming JSON against ReservationRequest before this
+def create_reservation(
+    reservation_request: ReservationCreate,
+    session: Session = Depends(database.get_session),
+) -> Reservation:
+    # FastAPI validates the incoming JSON against ReservationCreate before this
     # function runs, so invalid payloads return a 422 response automatically.
-    reservation = ReservationRecord(
-        id=next_reservation_id(),
-        **reservation_request.model_dump(),
-    )
-    reservations.append(reservation)
-    save_reservations()
+    reservation = Reservation.model_validate(reservation_request)
+    session.add(reservation)
+    session.commit()
+    session.refresh(reservation)
     return reservation

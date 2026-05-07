@@ -29,9 +29,9 @@
 	<section class="profiles">
 		<h2>Profiles (passed via props)</h2>
 		<div class="grid">
-			<Profile name="Alice" city="Paris" />
-			<Profile name="Bob" city="Tokyo" />
-			<Profile name="Carla" city="São Paulo" />
+			<Profile name="Alice" city="Paris" age={30} />
+			<Profile name="Bob" city="Tokyo" age={18} />
+			<Profile name="Carla" city="São Paulo" age={27} />
 		</div>
 	</section>
 </main>

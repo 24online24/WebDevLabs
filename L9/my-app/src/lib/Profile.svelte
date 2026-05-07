@@ -7,12 +7,17 @@
 -->
 
 <script lang="ts">
-	let { name, city } = $props<{ name: string; city: string }>();
+	let { name, city, age } = $props<{ name: string; city: string; age: number }>();
 </script>
 
 <article class="profile">
-	<h3>{name}</h3>
-	<p>Lives in <em>{city}</em></p>
+	<div>
+		<h3>
+			{name}
+			<span class="age">{age} years/</span>
+		</h3>
+		<p>Lives in <em>{city}</em></p>
+	</div>
 </article>
 
 <style>
@@ -37,5 +42,13 @@
 		color: #ff3e00;
 		font-style: normal;
 		font-weight: 600;
+	}
+
+	.age {
+		font-size: 0.65rem;
+		color: #64748b;
+		opacity: 0.8;
+		font-weight: 400;
+		margin-left: 0.1rem;
 	}
 </style>

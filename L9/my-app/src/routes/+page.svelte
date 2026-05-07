@@ -11,6 +11,7 @@
 </script>
 
 <main>
+	<Profile name="Marcus" city="Berlin" age={47} />
 	<header>
 		<h1>Svelte Fundamentals</h1>
 		<p>

@@ -8,6 +8,8 @@
 
 <script lang="ts">
 	let { name, city, age } = $props<{ name: string; city: string; age: number }>();
+
+	const age_in_months = $derived(age * 12);
 </script>
 
 <article class="profile">
@@ -15,6 +17,7 @@
 		<h3>
 			{name}
 			<span class="age">{age} years/</span>
+			<span class="age">{age_in_months} months old</span>
 		</h3>
 		<p>Lives in <em>{city}</em></p>
 	</div>

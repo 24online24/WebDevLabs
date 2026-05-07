@@ -10,16 +10,22 @@
 	let { name, city, age } = $props<{ name: string; city: string; age: number }>();
 
 	const age_in_months = $derived(age * 12);
+	const image_url = $derived(
+		`https://picsum.photos/seed/${encodeURIComponent(`${name}-${city}-${age}`)}/96`
+	);
 </script>
 
 <article class="profile">
-	<div>
-		<h3>
-			{name}
-			<span class="age">{age} years/</span>
-			<span class="age">{age_in_months} months old</span>
-		</h3>
-		<p>Lives in <em>{city}</em></p>
+	<div class="header">
+		<img class="avatar" src={image_url} alt={`Profile photo for ${name}`} />
+		<div>
+			<h3>
+				{name}
+				<span class="age">{age} years/</span>
+				<span class="age">{age_in_months} months old</span>
+			</h3>
+			<p>Lives in <em>{city}</em></p>
+		</div>
 	</div>
 </article>
 
@@ -29,6 +35,22 @@
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
 		background: #f1f5f9;
+	}
+
+	.header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.avatar {
+		width: 56px;
+		height: 56px;
+		border-radius: 999px;
+		object-fit: cover;
+		flex-shrink: 0;
+		border: 2px solid #fff;
+		box-shadow: 0 0 0 1px #cbd5e1;
 	}
 
 	h3 {

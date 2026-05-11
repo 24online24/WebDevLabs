@@ -16,6 +16,12 @@ import database
 
 BASE_DIR = Path(__file__).resolve().parent
 MENU_FILE = BASE_DIR / "menu.json"
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+]
 
 
 class MenuItemBase(SQLModel):
@@ -89,9 +95,10 @@ app = FastAPI(
 
 # Browsers block cross-origin requests by default, so the frontend needs an
 # explicit CORS rule before it can call the API from a different local port.
+# These origins match the default Svelte dev and preview servers used in L10.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -58,6 +58,21 @@ class CoffeeShopApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 8)
 
+    def test_cors_allows_svelte_dev_server_origin(self) -> None:
+        response = self.client.options(
+            "/api/menu",
+            headers={
+                "Origin": "http://localhost:5173",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers.get("access-control-allow-origin"),
+            "http://localhost:5173",
+        )
+
     def test_get_menu_filters_by_category_case_insensitively(self) -> None:
         response = self.client.get("/api/menu", params={"category": "coffee"})
 

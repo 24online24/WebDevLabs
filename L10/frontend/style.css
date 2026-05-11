@@ -1,0 +1,482 @@
+/* ===================================
+   Bean & Brew — Medium Level
+   CSS Concepts Demonstrated:
+   - CSS custom properties (variables)
+   - Flexbox layout
+   - CSS Grid with auto-fit / minmax
+   - Transitions & hover effects
+   - ::before / ::after pseudo-elements
+   - Box-shadow, border-radius
+   - Responsive design (@media query)
+   - Form styling with :focus states
+   - Google Fonts (2 families)
+   =================================== */
+
+/* ---------- Custom Properties ---------- */
+:root {
+  --primary: #4e342e;
+  --primary-light: #6d4c41;
+  --accent: #ff8f00;
+  --accent-light: #ffcc80;
+  --bg: #fffaf5;
+  --bg-alt: #efebe9;
+  --text: #3e2723;
+  --text-light: #795548;
+  --white: #fff;
+  --radius: 10px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --transition: 0.3s ease;
+}
+
+body.dark-theme {
+  --primary: #cebfb8;
+  --primary-light: #eaded8;
+  --accent: #f8b458;
+  --accent-light: #f7d8ac;
+  --bg: #1f1a18;
+  --bg-alt: #2b2421;
+  --text: #f5e8e1;
+  --text-light: #dcc6bb;
+  --white: #2f2724;
+  --shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Reset & Base ---------- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
+  line-height: 1.7;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ---------- Utility ---------- */
+.section {
+  padding: 80px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.2rem;
+  text-align: center;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.section-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--accent);
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--text-light);
+  margin-bottom: 40px;
+}
+
+.btn {
+  display: inline-block;
+  background-color: var(--accent);
+  color: var(--white);
+  padding: 12px 32px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    transform var(--transition);
+}
+
+.btn:hover {
+  background-color: #e65100;
+  transform: translateY(-2px);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--primary);
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+  color: var(--white);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+}
+
+.nav-links a {
+  color: var(--accent-light);
+  font-weight: 600;
+  transition: color var(--transition);
+}
+
+.nav-links a:hover {
+  color: var(--white);
+}
+
+.theme-toggle {
+  background: transparent;
+  color: var(--accent-light);
+  border: 1px solid var(--accent-light);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    background-color var(--transition);
+}
+
+.theme-toggle:hover {
+  color: var(--white);
+  border-color: var(--white);
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  background:
+    linear-gradient(rgba(62, 39, 35, 0.6), rgba(62, 39, 35, 0.6)),
+    url("https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1600&q=80")
+      center / cover no-repeat;
+  padding: 0;
+  max-width: none;
+}
+
+.hero-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 70vh;
+  padding: 40px 24px;
+  color: var(--white);
+}
+
+.hero h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: var(--accent-light);
+  margin-bottom: 28px;
+}
+
+/* ---------- Menu Grid ---------- */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+.menu-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.filter-btn {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition);
+}
+
+.filter-btn:hover {
+  transform: translateY(-1px);
+}
+
+.filter-btn.active {
+  background-color: var(--primary);
+  color: var(--bg);
+}
+
+.menu-status {
+  text-align: center;
+  color: var(--text-light);
+  grid-column: 1 / -1;
+}
+
+.menu-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.menu-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.menu-card-body {
+  padding: 20px;
+}
+
+.menu-card-body h3 {
+  font-size: 1.2rem;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.menu-card-body p {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.price {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+/* ---------- About ---------- */
+.about-container {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.about-image {
+  flex: 1;
+  min-width: 0;
+}
+
+.about-image img {
+  border-radius: var(--radius);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-text {
+  flex: 1;
+}
+
+.about-text h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.about-text p {
+  margin-bottom: 14px;
+  color: var(--text-light);
+}
+
+/* ---------- Reservation Form ---------- */
+.reservation {
+  background-color: var(--bg-alt);
+  max-width: none;
+  padding: 80px 24px;
+}
+
+.reservation-form {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: var(--primary);
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 10px 14px;
+  border: 2px solid #d7ccc8;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 1rem;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.2);
+}
+
+.reservation-form .btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.05rem;
+}
+
+.form-status {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  min-height: 22px;
+}
+
+.form-status.success {
+  color: #2e7d32;
+}
+
+.form-status.error {
+  color: #c62828;
+}
+
+body.dark-theme .form-status.success {
+  color: #8dda92;
+}
+
+body.dark-theme .form-status.error {
+  color: #ff8a80;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  background-color: var(--primary);
+  color: var(--accent-light);
+  padding: 48px 24px 24px;
+}
+
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-col h3 {
+  color: var(--white);
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.footer-col p {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+}
+
+/* ---------- Responsive (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-links {
+    gap: 16px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .about-container {
+    flex-direction: column;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}

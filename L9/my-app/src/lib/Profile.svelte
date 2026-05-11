@@ -7,7 +7,12 @@
 -->
 
 <script lang="ts">
-	let { name, city, age } = $props<{ name: string; city: string; age: number }>();
+	let { name, city, age, description } = $props<{
+		name: string;
+		city: string;
+		age: number;
+		description: string;
+	}>();
 
 	const age_in_months = $derived(age * 12);
 	const image_url = $derived(
@@ -27,6 +32,11 @@
 			<p>Lives in <em>{city}</em></p>
 		</div>
 	</div>
+
+	<details class="description">
+		<summary>View description</summary>
+		<p>{description}</p>
+	</details>
 </article>
 
 <style>
@@ -75,5 +85,20 @@
 		opacity: 0.8;
 		font-weight: 400;
 		margin-left: 0.1rem;
+	}
+
+	.description {
+		margin-top: 0.75rem;
+	}
+
+	summary {
+		cursor: pointer;
+		font-weight: 600;
+		color: #0f172a;
+	}
+
+	.description p {
+		margin-top: 0.5rem;
+		line-height: 1.5;
 	}
 </style>

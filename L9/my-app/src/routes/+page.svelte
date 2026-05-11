@@ -11,7 +11,12 @@
 </script>
 
 <main>
-	<Profile name="Marcus" city="Berlin" age={47} />
+	<Profile
+		name="Marcus"
+		city="Berlin"
+		age={47}
+		description="Marcus leads product workshops, cycles across the city on weekends, and keeps a notebook full of interface sketches."
+	/>
 	<header>
 		<h1>Svelte Fundamentals</h1>
 		<p>
@@ -30,9 +35,24 @@
 	<section class="profiles">
 		<h2>Profiles (passed via props)</h2>
 		<div class="grid">
-			<Profile name="Alice" city="Paris" age={30} />
-			<Profile name="Bob" city="Tokyo" age={18} />
-			<Profile name="Carla" city="São Paulo" age={27} />
+			<Profile
+				name="Alice"
+				city="Paris"
+				age={30}
+				description="Alice is a pastry chef who documents neighborhood cafes and tests new dessert menus every month."
+			/>
+			<Profile
+				name="Bob"
+				city="Tokyo"
+				age={18}
+				description="Bob studies robotics, spends late evenings building keyboard firmware, and never misses a local arcade tournament."
+			/>
+			<Profile
+				name="Carla"
+				city="São Paulo"
+				age={27}
+				description="Carla works in editorial design, collects vintage magazines, and runs typography meetups for students."
+			/>
 		</div>
 	</section>
 </main>

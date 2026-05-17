@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "name": "Espresso",
+        "category": "Coffee",
+        "price": 3,
+        "description": "Rich, bold, and perfectly pulled from single-origin beans.",
+        "image": "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "alt": "Freshly pulled espresso shot in a small cup",
+        "isFeatured": true
+    },
+    {
+        "id": 2,
+        "name": "Cappuccino",
+        "category": "Coffee",
+        "price": 4,
+        "description": "Velvety steamed milk layered over a double shot of espresso.",
+        "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=800&q=80",
+        "alt": "Cappuccino with thick steamed milk foam and latte art",
+        "isFeatured": false
+    },
+    {
+        "id": 3,
+        "name": "Latte",
+        "category": "Coffee",
+        "price": 4.5,
+        "description": "Smooth and creamy, our most popular drink morning or afternoon.",
+        "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+        "alt": "Creamy cafe latte in a ceramic cup",
+        "isFeatured": true
+    },
+    {
+        "id": 4,
+        "name": "Cold Brew",
+        "category": "Coffee",
+        "price": 4,
+        "description": "Steeped for 18 hours for a smooth, low-acid iced coffee.",
+        "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=80",
+        "alt": "Cold brew coffee served over ice",
+        "isFeatured": false
+    },
+    {
+        "id": 5,
+        "name": "Butter Croissant",
+        "category": "Pastry",
+        "price": 2.5,
+        "description": "Flaky, golden layers of hand-laminated French pastry.",
+        "image": "https://images.pexels.com/photos/2135/food-france-morning-breakfast.jpg?auto=compress&cs=tinysrgb&w=800",
+        "alt": "Golden butter croissant with flaky layers",
+        "isFeatured": false
+    },
+    {
+        "id": 6,
+        "name": "Blueberry Muffin",
+        "category": "Pastry",
+        "price": 3.25,
+        "description": "Baked fresh daily with real blueberries and lemon zest.",
+        "image": "https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=800&q=80",
+        "alt": "Blueberry muffin on a plate",
+        "isFeatured": false
+    },
+    {
+        "id": 7,
+        "name": "Matcha Latte",
+        "category": "Tea",
+        "price": 5,
+        "description": "Ceremonial-grade matcha whisked with creamy oat milk.",
+        "image": "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=800&q=80",
+        "alt": "Bright green matcha latte in a mug",
+        "isFeatured": true
+    },
+    {
+        "id": 8,
+        "name": "Chai Latte",
+        "category": "Tea",
+        "price": 4.75,
+        "description": "Spiced black tea blend with steamed milk and cinnamon.",
+        "image": "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=800&q=80",
+        "alt": "Warm chai latte with cinnamon",
+        "isFeatured": false
+    }
+]

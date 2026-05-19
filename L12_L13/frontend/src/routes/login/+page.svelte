@@ -77,20 +77,14 @@
 </section>
 
 <style>
-	:global(body) {
-		margin: 0;
-		font-family: 'Nunito', sans-serif;
-		background:
-			radial-gradient(circle at top, rgba(255, 214, 153, 0.55), transparent 30%),
-			linear-gradient(180deg, #1f130f 0%, #2d1b16 45%, #f7efe7 45%, #f7efe7 100%);
-		color: #2d1b16;
-	}
-
 	.login-shell {
 		min-height: 100vh;
 		display: grid;
 		place-items: center;
 		padding: 32px 20px;
+		background:
+			radial-gradient(circle at top, rgba(255, 214, 153, 0.55), transparent 30%),
+			linear-gradient(180deg, #1f130f 0%, #2d1b16 45%, #f7efe7 45%, #f7efe7 100%);
 	}
 
 	.login-card {

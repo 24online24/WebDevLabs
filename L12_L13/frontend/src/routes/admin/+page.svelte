@@ -343,17 +343,12 @@
 </section>
 
 <style>
-	:global(body) {
-		margin: 0;
-		font-family: 'Nunito', sans-serif;
-		background:
-			radial-gradient(circle at top right, rgba(214, 151, 81, 0.22), transparent 28%),
-			linear-gradient(160deg, #f5eee7 0%, #f5eee7 36%, #2d1b16 36%, #2d1b16 100%);
-	}
-
 	.dashboard-shell {
 		min-height: 100vh;
 		padding: 24px;
+		background:
+			radial-gradient(circle at top right, rgba(214, 151, 81, 0.22), transparent 28%),
+			linear-gradient(160deg, #f5eee7 0%, #f5eee7 36%, #2d1b16 36%, #2d1b16 100%);
 	}
 
 	.dashboard-grid {

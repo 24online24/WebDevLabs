@@ -1,4 +1,3 @@
-import main as backend_main
 import sys
 import unittest
 from pathlib import Path
@@ -9,6 +8,8 @@ from sqlmodel import Session, select
 BACKEND_DIR = Path(__file__).resolve().parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
+
+import main as backend_main
 
 
 class CoffeeShopApiTests(unittest.TestCase):

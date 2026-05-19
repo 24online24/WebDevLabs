@@ -245,6 +245,50 @@ class CoffeeShopApiTests(unittest.TestCase):
         fetch_response = self.client.get(f"/api/menu/{menu_item_id}")
         self.assertEqual(fetch_response.status_code, 404)
 
+    def test_admin_cannot_create_menu_item_with_invalid_price(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_ADMIN_EMAIL,
+            self.backend_main.INITIAL_ADMIN_PASSWORD,
+        )
+
+        response = self.client.post(
+            "/api/menu",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+            json={
+                "name": "Flat White",
+                "category": "Coffee",
+                "price": 0,
+                "description": "Velvety espresso with steamed milk.",
+                "image": "https://example.com/flat-white.jpg",
+                "alt": "Flat white coffee",
+                "isFeatured": False,
+            },
+        )
+
+        self.assertEqual(response.status_code, 422)
+
+    def test_admin_cannot_update_menu_item_with_blank_name(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_ADMIN_EMAIL,
+            self.backend_main.INITIAL_ADMIN_PASSWORD,
+        )
+
+        response = self.client.put(
+            "/api/menu/1",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+            json={
+                "name": "   ",
+                "category": "Coffee",
+                "price": 4.25,
+                "description": "Updated espresso-based drink.",
+                "image": "https://example.com/espresso.jpg",
+                "alt": "Espresso beverage",
+                "isFeatured": True,
+            },
+        )
+
+        self.assertEqual(response.status_code, 422)
+
     def test_admin_can_create_staff_user(self) -> None:
         login_data = self.login_as(
             self.backend_main.INITIAL_ADMIN_EMAIL,

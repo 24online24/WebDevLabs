@@ -3,6 +3,9 @@ import type {
 	ApiErrorResponse,
 	ApiValidationDetail,
 	LoginRequestPayload,
+	ReservationFilters,
+	ReservationResponse,
+	ReservationUpdatePayload,
 	SessionResponse,
 	User
 } from '$lib/types';
@@ -103,5 +106,40 @@ export async function logoutStaff(sessionToken: string): Promise<void> {
 	await apiRequest<{ status: string }>('/auth/logout', {
 		method: 'POST',
 		sessionToken
+	});
+}
+
+export function fetchReservations(
+	sessionToken: string,
+	filters: ReservationFilters = {}
+): Promise<ReservationResponse[]> {
+	const searchParams = new URLSearchParams();
+
+	if (filters.date) {
+		searchParams.set('date', filters.date);
+	}
+
+	if (filters.status) {
+		searchParams.set('status', filters.status);
+	}
+
+	const queryString = searchParams.toString();
+	const path = queryString ? `/reservations?${queryString}` : '/reservations';
+
+	return apiRequest<ReservationResponse[]>(path, { sessionToken });
+}
+
+export function updateReservation(
+	sessionToken: string,
+	reservationId: number,
+	payload: ReservationUpdatePayload
+): Promise<ReservationResponse> {
+	return apiRequest<ReservationResponse>(`/reservations/${reservationId}`, {
+		method: 'PATCH',
+		sessionToken,
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
 	});
 }

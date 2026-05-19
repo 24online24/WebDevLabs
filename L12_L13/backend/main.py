@@ -6,7 +6,7 @@ import json
 import os
 import secrets
 from contextlib import asynccontextmanager
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import UTC, date as DateValue, datetime, time as TimeValue, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Annotated, Any
@@ -48,6 +48,13 @@ class UserRole(str, Enum):
     manager = "manager"
 
 
+class ReservationStatus(str, Enum):
+    pending = "pending"
+    confirmed = "confirmed"
+    completed = "completed"
+    cancelled = "cancelled"
+
+
 class MenuItemBase(SQLModel):
     name: str
     category: str
@@ -73,18 +80,34 @@ class MenuItemUpdate(MenuItemBase):
 class ReservationBase(SQLModel):
     contact_name: str = Field(min_length=1, max_length=100)
     contact_email: EmailStr
-    date: date
-    time: time
+    date: DateValue
+    time: TimeValue
     guest_count: int = Field(ge=1, le=20)
     special_requests: str | None = Field(default=None, max_length=500)
 
 
 class Reservation(ReservationBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    status: ReservationStatus = Field(default=ReservationStatus.pending, index=True)
+    internal_notes: str | None = Field(default=None, max_length=500)
+    created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+    updated_by_id: int | None = Field(default=None, foreign_key="users.id")
 
 
 class ReservationCreate(ReservationBase):
     pass
+
+
+class ReservationUpdate(SQLModel):
+    contact_name: str | None = Field(default=None, min_length=1, max_length=100)
+    contact_email: EmailStr | None = None
+    date: DateValue | None = None
+    time: TimeValue | None = None
+    guest_count: int | None = Field(default=None, ge=1, le=20)
+    special_requests: str | None = Field(default=None, max_length=500)
+    status: ReservationStatus | None = None
+    internal_notes: str | None = Field(default=None, max_length=500)
 
 
 class UserBase(SQLModel):
@@ -547,7 +570,8 @@ def delete_menu_item(
 
 @app.get("/api/reservations", response_model=list[Reservation])
 def list_reservations(
-    reservation_date: date | None = Query(default=None, alias="date"),
+    reservation_date: DateValue | None = Query(default=None, alias="date"),
+    reservation_status: ReservationStatus | None = Query(default=None, alias="status"),
     _: Annotated[User, Depends(require_manager_or_admin)] = None,
     session: Session = Depends(database.get_session),
 ) -> list[Reservation]:
@@ -559,6 +583,9 @@ def list_reservations(
 
     if reservation_date is not None:
         statement = statement.where(Reservation.date == reservation_date)
+
+    if reservation_status is not None:
+        statement = statement.where(Reservation.status == reservation_status)
 
     return list(session.exec(statement).all())
 
@@ -577,6 +604,33 @@ def get_reservation(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Reservation not found.",
     )
+
+
+@app.patch("/api/reservations/{reservation_id}", response_model=Reservation)
+def update_reservation(
+    reservation_id: int,
+    reservation_request: ReservationUpdate,
+    current_user: Annotated[User, Depends(require_manager_or_admin)],
+    session: Session = Depends(database.get_session),
+) -> Reservation:
+    reservation = session.get(Reservation, reservation_id)
+    if reservation is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Reservation not found.",
+        )
+
+    update_data = reservation_request.model_dump(exclude_unset=True)
+    for field_name, value in update_data.items():
+        setattr(reservation, field_name, value)
+
+    reservation.updated_at = utc_now()
+    reservation.updated_by_id = current_user.id
+
+    session.add(reservation)
+    session.commit()
+    session.refresh(reservation)
+    return reservation
 
 
 @app.post(

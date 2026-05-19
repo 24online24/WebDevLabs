@@ -17,6 +17,29 @@ export interface ReservationResponse {
 	time: string;
 	guest_count: number;
 	special_requests: string | null;
+	status: ReservationStatus;
+	internal_notes: string | null;
+	created_at: string;
+	updated_at: string;
+	updated_by_id: number | null;
+}
+
+export type ReservationStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
+
+export interface ReservationFilters {
+	date?: string;
+	status?: ReservationStatus;
+}
+
+export interface ReservationUpdatePayload {
+	contact_name?: string;
+	contact_email?: string;
+	date?: string;
+	time?: string;
+	guest_count?: number;
+	special_requests?: string | null;
+	status?: ReservationStatus;
+	internal_notes?: string | null;
 }
 
 export interface ApiValidationDetail {

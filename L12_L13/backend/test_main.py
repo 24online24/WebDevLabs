@@ -49,6 +49,21 @@ class CoffeeShopApiTests(unittest.TestCase):
     def build_session_headers(self, session_token: str) -> dict[str, str]:
         return {self.backend_main.SESSION_HEADER_NAME: session_token}
 
+    def create_reservation(self, **overrides: object) -> dict[str, object]:
+        payload = {
+            "contact_name": "Jane Doe",
+            "contact_email": "jane@example.com",
+            "date": "2026-06-15",
+            "time": "14:30",
+            "guest_count": 4,
+            "special_requests": "Window seat, please.",
+        }
+        payload.update(overrides)
+
+        response = self.client.post("/api/reservations", json=payload)
+        self.assertEqual(response.status_code, 201)
+        return response.json()
+
     def test_startup_seeds_menu_items_into_database(self) -> None:
         with Session(self.backend_main.database.engine) as session:
             menu_items = session.exec(select(self.backend_main.MenuItem)).all()
@@ -280,12 +295,21 @@ class CoffeeShopApiTests(unittest.TestCase):
         response_data = response.json()
         self.assertEqual(response_data["id"], 1)
         self.assertEqual(response_data["contact_name"], payload["contact_name"])
+        self.assertEqual(
+            response_data["status"],
+            self.backend_main.ReservationStatus.pending.value,
+        )
+        self.assertIsNone(response_data["internal_notes"])
 
         with Session(self.backend_main.database.engine) as session:
             saved_reservations = session.exec(select(self.backend_main.Reservation)).all()
 
         self.assertEqual(len(saved_reservations), 1)
         self.assertEqual(saved_reservations[0].contact_email, payload["contact_email"])
+        self.assertEqual(
+            saved_reservations[0].status,
+            self.backend_main.ReservationStatus.pending,
+        )
 
     def test_post_reservation_rejects_invalid_guest_count(self) -> None:
         payload = {
@@ -302,16 +326,7 @@ class CoffeeShopApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
 
     def test_manager_can_list_reservations(self) -> None:
-        reservation_payload = {
-            "contact_name": "Jane Doe",
-            "contact_email": "jane@example.com",
-            "date": "2026-06-15",
-            "time": "14:30",
-            "guest_count": 4,
-            "special_requests": "Window seat, please.",
-        }
-        create_response = self.client.post("/api/reservations", json=reservation_payload)
-        self.assertEqual(create_response.status_code, 201)
+        reservation = self.create_reservation()
 
         login_data = self.login_as(
             self.backend_main.INITIAL_MANAGER_EMAIL,
@@ -325,7 +340,92 @@ class CoffeeShopApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
-        self.assertEqual(response.json()[0]["contact_email"], reservation_payload["contact_email"])
+        self.assertEqual(response.json()[0]["contact_email"], reservation["contact_email"])
+
+    def test_manager_can_update_reservation_status_and_notes(self) -> None:
+        reservation = self.create_reservation()
+        login_data = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+
+        response = self.client.patch(
+            f"/api/reservations/{reservation['id']}",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+            json={
+                "status": self.backend_main.ReservationStatus.confirmed.value,
+                "internal_notes": "VIP guest, hold the corner table.",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["status"],
+            self.backend_main.ReservationStatus.confirmed.value,
+        )
+        self.assertEqual(
+            response.json()["internal_notes"],
+            "VIP guest, hold the corner table.",
+        )
+
+        with Session(self.backend_main.database.engine) as session:
+            saved_reservation = session.get(
+                self.backend_main.Reservation,
+                int(reservation["id"]),
+            )
+
+        self.assertIsNotNone(saved_reservation)
+        assert saved_reservation is not None
+        self.assertEqual(
+            saved_reservation.status,
+            self.backend_main.ReservationStatus.confirmed,
+        )
+        self.assertEqual(
+            saved_reservation.internal_notes,
+            "VIP guest, hold the corner table.",
+        )
+
+    def test_reservation_list_filters_by_status(self) -> None:
+        first_reservation = self.create_reservation(contact_email="pending@example.com")
+        second_reservation = self.create_reservation(
+            contact_name="Sam Guest",
+            contact_email="confirmed@example.com",
+            time="16:00",
+        )
+        login_data = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+        headers = self.build_session_headers(str(login_data["session_token"]))
+
+        update_response = self.client.patch(
+            f"/api/reservations/{second_reservation['id']}",
+            headers=headers,
+            json={"status": self.backend_main.ReservationStatus.confirmed.value},
+        )
+        self.assertEqual(update_response.status_code, 200)
+
+        filtered_response = self.client.get(
+            "/api/reservations",
+            headers=headers,
+            params={"status": self.backend_main.ReservationStatus.confirmed.value},
+        )
+
+        self.assertEqual(filtered_response.status_code, 200)
+        self.assertEqual(len(filtered_response.json()), 1)
+        self.assertEqual(filtered_response.json()[0]["id"], second_reservation["id"])
+        self.assertNotEqual(filtered_response.json()[0]["id"], first_reservation["id"])
+
+    def test_reservation_update_requires_session_token(self) -> None:
+        reservation = self.create_reservation()
+
+        response = self.client.patch(
+            f"/api/reservations/{reservation['id']}",
+            json={"status": self.backend_main.ReservationStatus.cancelled.value},
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["detail"], self.backend_main.AUTH_REQUIRED_DETAIL)
 
     def test_reservation_list_requires_session_token(self) -> None:
         response = self.client.get("/api/reservations")

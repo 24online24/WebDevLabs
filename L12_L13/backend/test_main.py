@@ -265,6 +265,94 @@ class CoffeeShopApiTests(unittest.TestCase):
         self.assertEqual(response.json()["email"], "shiftlead@example.com")
         self.assertEqual(response.json()["role"], self.backend_main.UserRole.manager.value)
 
+    def test_admin_can_update_staff_user_role_and_active_state(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_ADMIN_EMAIL,
+            self.backend_main.INITIAL_ADMIN_PASSWORD,
+        )
+        headers = self.build_session_headers(str(login_data["session_token"]))
+
+        create_response = self.client.post(
+            "/api/staff/users",
+            headers=headers,
+            json={
+                "email": "host@example.com",
+                "display_name": "Host",
+                "password": "hostpass123",
+                "role": self.backend_main.UserRole.manager.value,
+            },
+        )
+        self.assertEqual(create_response.status_code, 201)
+        created_user_id = create_response.json()["id"]
+
+        update_response = self.client.patch(
+            f"/api/staff/users/{created_user_id}",
+            headers=headers,
+            json={
+                "display_name": "Lead Host",
+                "role": self.backend_main.UserRole.admin.value,
+                "is_active": False,
+            },
+        )
+
+        self.assertEqual(update_response.status_code, 200)
+        self.assertEqual(update_response.json()["display_name"], "Lead Host")
+        self.assertEqual(update_response.json()["role"], self.backend_main.UserRole.admin.value)
+        self.assertFalse(update_response.json()["is_active"])
+
+    def test_manager_cannot_update_staff_user(self) -> None:
+        admin_login = self.login_as(
+            self.backend_main.INITIAL_ADMIN_EMAIL,
+            self.backend_main.INITIAL_ADMIN_PASSWORD,
+        )
+        admin_headers = self.build_session_headers(str(admin_login["session_token"]))
+
+        create_response = self.client.post(
+            "/api/staff/users",
+            headers=admin_headers,
+            json={
+                "email": "host@example.com",
+                "display_name": "Host",
+                "password": "hostpass123",
+                "role": self.backend_main.UserRole.manager.value,
+            },
+        )
+        self.assertEqual(create_response.status_code, 201)
+        created_user_id = create_response.json()["id"]
+
+        manager_login = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+
+        response = self.client.patch(
+            f"/api/staff/users/{created_user_id}",
+            headers=self.build_session_headers(str(manager_login["session_token"])),
+            json={"is_active": False},
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["detail"], self.backend_main.FORBIDDEN_DETAIL)
+
+    def test_admin_cannot_deactivate_their_own_account(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_ADMIN_EMAIL,
+            self.backend_main.INITIAL_ADMIN_PASSWORD,
+        )
+        headers = self.build_session_headers(str(login_data["session_token"]))
+
+        response = self.client.patch(
+            "/api/staff/users/1",
+            headers=headers,
+            json={"is_active": False},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["detail"],
+            "You cannot deactivate your own account.",
+        )
+
     def test_manager_cannot_list_staff_users(self) -> None:
         login_data = self.login_as(
             self.backend_main.INITIAL_MANAGER_EMAIL,

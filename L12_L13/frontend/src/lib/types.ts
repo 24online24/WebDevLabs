@@ -68,6 +68,19 @@ export interface User {
 	created_at: string;
 }
 
+export interface StaffUserCreatePayload {
+	email: string;
+	display_name: string;
+	password: string;
+	role: UserRole;
+}
+
+export interface StaffUserUpdatePayload {
+	display_name?: string;
+	role?: UserRole;
+	is_active?: boolean;
+}
+
 export interface LoginRequestPayload {
 	email: string;
 	password: string;

@@ -9,6 +9,7 @@
 		updateMenuItem
 	} from '$lib/api';
 	import { authState } from '$lib/auth.svelte';
+	import StaffManagementPanel from '$lib/components/StaffManagementPanel.svelte';
 	import type { MenuItem, MenuItemPayload } from '$lib/types';
 
 	let isReady = $state(false);
@@ -335,6 +336,8 @@
 					</div>
 				{/if}
 			</section>
+
+			<StaffManagementPanel />
 		</div>
 	{/if}
 </section>

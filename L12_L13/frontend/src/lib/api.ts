@@ -8,6 +8,8 @@ import type {
 	ReservationFilters,
 	ReservationResponse,
 	ReservationUpdatePayload,
+	StaffUserCreatePayload,
+	StaffUserUpdatePayload,
 	SessionResponse,
 	User
 } from '$lib/types';
@@ -141,6 +143,39 @@ export async function deleteMenuItem(sessionToken: string, menuItemId: number): 
 	await apiRequest<{ status: string }>(`/menu/${menuItemId}`, {
 		method: 'DELETE',
 		sessionToken
+	});
+}
+
+export function fetchStaffUsers(sessionToken: string): Promise<User[]> {
+	return apiRequest<User[]>('/staff/users', { sessionToken });
+}
+
+export function createStaffUser(
+	sessionToken: string,
+	payload: StaffUserCreatePayload
+): Promise<User> {
+	return apiRequest<User>('/staff/users', {
+		method: 'POST',
+		sessionToken,
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
+	});
+}
+
+export function updateStaffUser(
+	sessionToken: string,
+	userId: number,
+	payload: StaffUserUpdatePayload
+): Promise<User> {
+	return apiRequest<User>(`/staff/users/${userId}`, {
+		method: 'PATCH',
+		sessionToken,
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
 	});
 }
 

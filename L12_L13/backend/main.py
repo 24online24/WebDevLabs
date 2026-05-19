@@ -133,6 +133,12 @@ class StaffUserCreate(SQLModel):
     role: UserRole = UserRole.manager
 
 
+class StaffUserUpdate(SQLModel):
+    display_name: str | None = Field(default=None, min_length=1, max_length=100)
+    role: UserRole | None = None
+    is_active: bool | None = None
+
+
 class StaffUserRead(UserBase):
     id: int
     created_at: datetime
@@ -479,6 +485,49 @@ def create_staff_user(
         password=user_request.password,
         role=user_request.role,
     )
+    return build_user_response(user)
+
+
+@app.patch("/api/staff/users/{user_id}", response_model=StaffUserRead)
+def update_staff_user(
+    user_id: int,
+    user_request: StaffUserUpdate,
+    current_user: Annotated[User, Depends(require_admin)],
+    session: Session = Depends(database.get_session),
+) -> StaffUserRead:
+    user = session.get(User, user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Staff user not found.",
+        )
+
+    if user.id == current_user.id:
+        if user_request.is_active is False:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You cannot deactivate your own account.",
+            )
+
+        if user_request.role is not None and user_request.role != UserRole.admin:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You cannot remove your own admin role.",
+            )
+
+    if user_request.display_name is not None:
+        user.display_name = user_request.display_name.strip()
+
+    if user_request.role is not None:
+        user.role = user_request.role
+
+    if user_request.is_active is not None:
+        user.is_active = user_request.is_active
+
+    user.updated_at = utc_now()
+    session.add(user)
+    session.commit()
+    session.refresh(user)
     return build_user_response(user)
 
 

@@ -34,6 +34,15 @@ export interface ReservationResponse {
 	updated_by_id: number | null;
 }
 
+export interface ReservationCreatePayload {
+	contact_name: string;
+	contact_email: string;
+	date: string;
+	time: string;
+	guest_count: number;
+	special_requests: string | null;
+}
+
 export type ReservationStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
 export interface ReservationFilters {

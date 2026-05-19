@@ -5,6 +5,7 @@ import type {
 	LoginRequestPayload,
 	MenuItem,
 	MenuItemPayload,
+	ReservationCreatePayload,
 	ReservationFilters,
 	ReservationResponse,
 	ReservationUpdatePayload,
@@ -111,6 +112,16 @@ export function fetchMenuItems(category?: string): Promise<MenuItem[]> {
 	const queryString = searchParams.toString();
 	const path = queryString ? `/menu?${queryString}` : '/menu';
 	return apiRequest<MenuItem[]>(path);
+}
+
+export function createReservation(payload: ReservationCreatePayload): Promise<ReservationResponse> {
+	return apiRequest<ReservationResponse>('/reservations', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
+	});
 }
 
 export function createMenuItem(sessionToken: string, payload: MenuItemPayload): Promise<MenuItem> {

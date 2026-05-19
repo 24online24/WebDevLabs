@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { apiBasePath } from '$lib/config';
+	import { createReservation, fetchMenuItems, getApiErrorMessage } from '$lib/api';
 	import MenuCard from '$lib/components/MenuCard.svelte';
-	import type { ApiValidationDetail, MenuItem, ReservationResponse } from '$lib/types';
+	import type { MenuItem, ReservationCreatePayload, ReservationResponse } from '$lib/types';
 
 	const shopName = 'Bean & Brew';
 	const defaultCategory = 'All';
@@ -69,37 +69,11 @@
 		syncThemeClass();
 	}
 
-	function buildMenuUrl(category: string = defaultCategory): string {
-		const params = new URLSearchParams();
-
-		if (category !== defaultCategory) {
-			params.set('category', category);
-		}
-
-		const queryString = params.toString();
-		return queryString ? `${apiBasePath}/menu?${queryString}` : `${apiBasePath}/menu`;
-	}
-
-	async function fetchMenuData(category: string = defaultCategory): Promise<MenuItem[]> {
-		const response = await fetch(buildMenuUrl(category));
-
-		if (!response.ok) {
-			throw new Error('Unable to fetch menu data.');
-		}
-
-		const data = (await response.json()) as MenuItem[];
-		if (!Array.isArray(data)) {
-			throw new Error('Menu data format is invalid.');
-		}
-
-		return data;
-	}
-
 	async function loadMenuData(): Promise<void> {
 		menuStatus = 'Loading menu...';
 
 		try {
-			menuItems = await fetchMenuData();
+			menuItems = await fetchMenuItems();
 			displayedMenuItems = menuItems;
 			categories = getCategories(menuItems);
 			menuStatus = displayedMenuItems.length === 0 ? 'No items found for this category.' : '';
@@ -118,7 +92,7 @@
 			displayedMenuItems =
 				category === defaultCategory && menuItems.length > 0
 					? menuItems
-					: await fetchMenuData(category);
+					: await fetchMenuItems(category);
 			menuStatus = displayedMenuItems.length === 0 ? 'No items found for this category.' : '';
 		} catch (error) {
 			console.error(error);
@@ -129,37 +103,6 @@
 	function showReservationMessage(message: string, type: 'success' | 'error'): void {
 		reservationStatus = message;
 		reservationStatusType = type;
-	}
-
-	function formatApiErrorDetail(detail: ApiValidationDetail): string {
-		const fieldName = detail.loc?.[detail.loc.length - 1];
-
-		if (!fieldName) {
-			return detail.msg;
-		}
-
-		const label = String(fieldName).replaceAll('_', ' ');
-		return `${label}: ${detail.msg}`;
-	}
-
-	async function getApiErrorMessage(response: Response): Promise<string> {
-		try {
-			const data = (await response.json()) as {
-				detail?: string | ApiValidationDetail[];
-			};
-
-			if (Array.isArray(data.detail)) {
-				return data.detail.map(formatApiErrorDetail).join(' ');
-			}
-
-			if (typeof data.detail === 'string') {
-				return data.detail;
-			}
-		} catch (error) {
-			console.error(error);
-		}
-
-		return 'Unable to submit reservation right now. Please try again.';
 	}
 
 	function validateReservation(): string {
@@ -208,7 +151,7 @@
 
 		const trimmedName = contactName.trim();
 		const parsedGuestCount = Number(guestCount);
-		const reservationPayload = {
+		const reservationPayload: ReservationCreatePayload = {
 			contact_name: trimmedName,
 			contact_email: contactEmail.trim(),
 			date: reservationDate,
@@ -218,21 +161,7 @@
 		};
 
 		try {
-			const response = await fetch(`${apiBasePath}/reservations`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(reservationPayload)
-			});
-
-			if (response.status !== 201) {
-				const errorMessage = await getApiErrorMessage(response);
-				showReservationMessage(errorMessage, 'error');
-				return;
-			}
-
-			const savedReservation = (await response.json()) as ReservationResponse;
+			const savedReservation: ReservationResponse = await createReservation(reservationPayload);
 			showReservationMessage(
 				`Thanks, ${trimmedName}! Reservation #${savedReservation.id} for ${parsedGuestCount} guests at ${shopName} is confirmed for ${reservationDate} at ${reservationTime}.`,
 				'success'
@@ -241,7 +170,10 @@
 		} catch (error) {
 			console.error(error);
 			showReservationMessage(
-				'Unable to reach the reservation service right now. Please try again.',
+				getApiErrorMessage(
+					error,
+					'Unable to reach the reservation service right now. Please try again.'
+				),
 				'error'
 			);
 		}

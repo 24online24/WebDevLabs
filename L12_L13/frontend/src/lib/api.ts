@@ -3,6 +3,8 @@ import type {
 	ApiErrorResponse,
 	ApiValidationDetail,
 	LoginRequestPayload,
+	MenuItem,
+	MenuItemPayload,
 	ReservationFilters,
 	ReservationResponse,
 	ReservationUpdatePayload,
@@ -95,6 +97,50 @@ export function loginStaff(payload: LoginRequestPayload): Promise<SessionRespons
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(payload)
+	});
+}
+
+export function fetchMenuItems(category?: string): Promise<MenuItem[]> {
+	const searchParams = new URLSearchParams();
+	if (category) {
+		searchParams.set('category', category);
+	}
+
+	const queryString = searchParams.toString();
+	const path = queryString ? `/menu?${queryString}` : '/menu';
+	return apiRequest<MenuItem[]>(path);
+}
+
+export function createMenuItem(sessionToken: string, payload: MenuItemPayload): Promise<MenuItem> {
+	return apiRequest<MenuItem>('/menu', {
+		method: 'POST',
+		sessionToken,
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
+	});
+}
+
+export function updateMenuItem(
+	sessionToken: string,
+	menuItemId: number,
+	payload: MenuItemPayload
+): Promise<MenuItem> {
+	return apiRequest<MenuItem>(`/menu/${menuItemId}`, {
+		method: 'PUT',
+		sessionToken,
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
+	});
+}
+
+export async function deleteMenuItem(sessionToken: string, menuItemId: number): Promise<void> {
+	await apiRequest<{ status: string }>(`/menu/${menuItemId}`, {
+		method: 'DELETE',
+		sessionToken
 	});
 }
 

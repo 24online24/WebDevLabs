@@ -13,7 +13,7 @@ from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import EmailStr
+from pydantic import EmailStr, field_validator
 from sqlalchemy import func
 from sqlmodel import Field, SQLModel, Session, select
 
@@ -56,13 +56,22 @@ class ReservationStatus(str, Enum):
 
 
 class MenuItemBase(SQLModel):
-    name: str
-    category: str
-    price: float
-    description: str
-    image: str
-    alt: str
+    name: str = Field(min_length=1, max_length=100)
+    category: str = Field(min_length=1, max_length=50)
+    price: float = Field(gt=0)
+    description: str = Field(min_length=1, max_length=500)
+    image: str = Field(min_length=1, max_length=500)
+    alt: str = Field(min_length=1, max_length=200)
     isFeatured: bool = False
+
+    @field_validator("name", "category", "description", "image", "alt")
+    @classmethod
+    def validate_non_blank_text(cls, value: str) -> str:
+        trimmed_value = value.strip()
+        if not trimmed_value:
+            raise ValueError("Value cannot be blank.")
+
+        return trimmed_value
 
 
 class MenuItem(MenuItemBase, table=True):

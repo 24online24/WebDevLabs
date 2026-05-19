@@ -34,6 +34,18 @@
 		);
 	}
 
+	function matchesActiveFilters(reservation: ReservationResponse): boolean {
+		if (selectedStatus !== 'all' && reservation.status !== selectedStatus) {
+			return false;
+		}
+
+		if (selectedDate && reservation.date !== selectedDate) {
+			return false;
+		}
+
+		return true;
+	}
+
 	async function loadReservations(): Promise<void> {
 		if (!authState.sessionToken) {
 			return;
@@ -82,9 +94,9 @@
 				reservationId,
 				payload
 			);
-			reservations = reservations.map((reservation) =>
-				reservation.id === reservationId ? updatedReservation : reservation
-			);
+			reservations = reservations
+				.map((reservation) => (reservation.id === reservationId ? updatedReservation : reservation))
+				.filter(matchesActiveFilters);
 			updateNoteDraft(reservationId, updatedReservation.internal_notes ?? '');
 			setPageMessage(`Reservation #${reservationId} updated.`, 'success');
 		} catch (error) {
@@ -290,17 +302,12 @@
 </section>
 
 <style>
-	:global(body) {
-		margin: 0;
-		font-family: 'Nunito', sans-serif;
-		background:
-			radial-gradient(circle at top left, rgba(88, 153, 129, 0.18), transparent 28%),
-			linear-gradient(180deg, #203b35 0%, #203b35 32%, #f3f1ea 32%, #f3f1ea 100%);
-	}
-
 	.dashboard-shell {
 		min-height: 100vh;
 		padding: 24px;
+		background:
+			radial-gradient(circle at top left, rgba(88, 153, 129, 0.18), transparent 28%),
+			linear-gradient(180deg, #203b35 0%, #203b35 32%, #f3f1ea 32%, #f3f1ea 100%);
 	}
 
 	.dashboard-grid {

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { apiBasePath } from '$lib/config';
 	import MenuCard from '$lib/components/MenuCard.svelte';
 	import type { ApiValidationDetail, MenuItem, ReservationResponse } from '$lib/types';
 
 	const shopName = 'Bean & Brew';
-	const apiBasePath = 'http://127.0.0.1:8000/api';
 	const defaultCategory = 'All';
 	const maxAdvanceDays = 60;
 	const aboutImage =
@@ -14,7 +14,8 @@
 		{ href: '#menu', label: 'Menu' },
 		{ href: '#about', label: 'About' },
 		{ href: '#reservation', label: 'Reserve' },
-		{ href: '#contact', label: 'Contact' }
+		{ href: '#contact', label: 'Contact' },
+		{ href: '/login', label: 'Staff Login' }
 	];
 	const footerColumns = [
 		{

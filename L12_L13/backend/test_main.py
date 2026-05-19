@@ -1,3 +1,4 @@
+import main as backend_main
 import sys
 import unittest
 from pathlib import Path
@@ -8,8 +9,6 @@ from sqlmodel import Session, select
 BACKEND_DIR = Path(__file__).resolve().parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
-
-import main as backend_main
 
 
 class CoffeeShopApiTests(unittest.TestCase):
@@ -38,11 +37,31 @@ class CoffeeShopApiTests(unittest.TestCase):
         if self.database_file.exists():
             self.database_file.unlink()
 
+    def login_as(self, email: str, password: str) -> dict[str, object]:
+        response = self.client.post(
+            "/api/auth/login",
+            json={"email": email, "password": password},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def build_session_headers(self, session_token: str) -> dict[str, str]:
+        return {self.backend_main.SESSION_HEADER_NAME: session_token}
+
     def test_startup_seeds_menu_items_into_database(self) -> None:
         with Session(self.backend_main.database.engine) as session:
             menu_items = session.exec(select(self.backend_main.MenuItem)).all()
 
         self.assertEqual(len(menu_items), 8)
+
+    def test_startup_seeds_staff_users_into_database(self) -> None:
+        with Session(self.backend_main.database.engine) as session:
+            staff_users = session.exec(select(self.backend_main.User).order_by(self.backend_main.User.id)).all()
+
+        self.assertEqual(len(staff_users), 2)
+        self.assertEqual(staff_users[0].role, self.backend_main.UserRole.admin)
+        self.assertEqual(staff_users[1].role, self.backend_main.UserRole.manager)
 
     def test_status_returns_counts(self) -> None:
         response = self.client.get("/api/status")
@@ -51,6 +70,70 @@ class CoffeeShopApiTests(unittest.TestCase):
         self.assertEqual(response.json()["status"], "ok")
         self.assertEqual(response.json()["menu_count"], 8)
         self.assertEqual(response.json()["reservation_count"], 0)
+        self.assertEqual(response.json()["staff_user_count"], 2)
+
+    def test_login_returns_session_token_and_user_summary(self) -> None:
+        response = self.client.post(
+            "/api/auth/login",
+            json={
+                "email": self.backend_main.INITIAL_ADMIN_EMAIL,
+                "password": self.backend_main.INITIAL_ADMIN_PASSWORD,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json()
+        self.assertIn("session_token", response_data)
+        self.assertEqual(response_data["user"]["email"], self.backend_main.INITIAL_ADMIN_EMAIL)
+        self.assertEqual(response_data["user"]["role"], self.backend_main.UserRole.admin.value)
+
+    def test_login_rejects_invalid_credentials(self) -> None:
+        response = self.client.post(
+            "/api/auth/login",
+            json={
+                "email": self.backend_main.INITIAL_ADMIN_EMAIL,
+                "password": "wrong-password",
+            },
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["detail"], self.backend_main.INVALID_CREDENTIALS_DETAIL)
+
+    def test_get_current_user_requires_session_token(self) -> None:
+        response = self.client.get("/api/auth/me")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["detail"], self.backend_main.AUTH_REQUIRED_DETAIL)
+
+    def test_get_current_user_returns_authenticated_staff_user(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+
+        response = self.client.get(
+            "/api/auth/me",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["email"], self.backend_main.INITIAL_MANAGER_EMAIL)
+        self.assertEqual(response.json()["role"], self.backend_main.UserRole.manager.value)
+
+    def test_logout_revokes_the_current_session(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+        headers = self.build_session_headers(str(login_data["session_token"]))
+
+        logout_response = self.client.post("/api/auth/logout", headers=headers)
+        self.assertEqual(logout_response.status_code, 200)
+        self.assertEqual(logout_response.json()["status"], "logged_out")
+
+        me_response = self.client.get("/api/auth/me", headers=headers)
+        self.assertEqual(me_response.status_code, 401)
+        self.assertEqual(me_response.json()["detail"], self.backend_main.INVALID_SESSION_DETAIL)
 
     def test_get_menu_returns_all_items(self) -> None:
         response = self.client.get("/api/menu")
@@ -92,6 +175,95 @@ class CoffeeShopApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["detail"], "Menu item not found.")
 
+    def test_manager_cannot_create_menu_item(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+
+        response = self.client.post(
+            "/api/menu",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+            json={
+                "name": "Flat White",
+                "category": "Coffee",
+                "price": 4.75,
+                "description": "Velvety espresso with steamed milk.",
+                "image": "https://example.com/flat-white.jpg",
+                "alt": "Flat white coffee",
+                "isFeatured": False,
+            },
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["detail"], self.backend_main.FORBIDDEN_DETAIL)
+
+    def test_admin_can_create_and_delete_menu_item(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_ADMIN_EMAIL,
+            self.backend_main.INITIAL_ADMIN_PASSWORD,
+        )
+        headers = self.build_session_headers(str(login_data["session_token"]))
+
+        create_response = self.client.post(
+            "/api/menu",
+            headers=headers,
+            json={
+                "name": "Flat White",
+                "category": "Coffee",
+                "price": 4.75,
+                "description": "Velvety espresso with steamed milk.",
+                "image": "https://example.com/flat-white.jpg",
+                "alt": "Flat white coffee",
+                "isFeatured": True,
+            },
+        )
+
+        self.assertEqual(create_response.status_code, 201)
+        menu_item_id = create_response.json()["id"]
+
+        delete_response = self.client.delete(f"/api/menu/{menu_item_id}", headers=headers)
+        self.assertEqual(delete_response.status_code, 200)
+        self.assertEqual(delete_response.json()["status"], "deleted")
+
+        fetch_response = self.client.get(f"/api/menu/{menu_item_id}")
+        self.assertEqual(fetch_response.status_code, 404)
+
+    def test_admin_can_create_staff_user(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_ADMIN_EMAIL,
+            self.backend_main.INITIAL_ADMIN_PASSWORD,
+        )
+
+        response = self.client.post(
+            "/api/staff/users",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+            json={
+                "email": "shiftlead@example.com",
+                "display_name": "Shift Lead",
+                "password": "shiftlead123",
+                "role": self.backend_main.UserRole.manager.value,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["email"], "shiftlead@example.com")
+        self.assertEqual(response.json()["role"], self.backend_main.UserRole.manager.value)
+
+    def test_manager_cannot_list_staff_users(self) -> None:
+        login_data = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+
+        response = self.client.get(
+            "/api/staff/users",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["detail"], self.backend_main.FORBIDDEN_DETAIL)
+
     def test_post_reservation_returns_201_and_persists_to_database(self) -> None:
         payload = {
             "contact_name": "Jane Doe",
@@ -128,6 +300,38 @@ class CoffeeShopApiTests(unittest.TestCase):
         response = self.client.post("/api/reservations", json=payload)
 
         self.assertEqual(response.status_code, 422)
+
+    def test_manager_can_list_reservations(self) -> None:
+        reservation_payload = {
+            "contact_name": "Jane Doe",
+            "contact_email": "jane@example.com",
+            "date": "2026-06-15",
+            "time": "14:30",
+            "guest_count": 4,
+            "special_requests": "Window seat, please.",
+        }
+        create_response = self.client.post("/api/reservations", json=reservation_payload)
+        self.assertEqual(create_response.status_code, 201)
+
+        login_data = self.login_as(
+            self.backend_main.INITIAL_MANAGER_EMAIL,
+            self.backend_main.INITIAL_MANAGER_PASSWORD,
+        )
+
+        response = self.client.get(
+            "/api/reservations",
+            headers=self.build_session_headers(str(login_data["session_token"])),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]["contact_email"], reservation_payload["contact_email"])
+
+    def test_reservation_list_requires_session_token(self) -> None:
+        response = self.client.get("/api/reservations")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["detail"], self.backend_main.AUTH_REQUIRED_DETAIL)
 
     def test_post_reservation_rejects_invalid_email(self) -> None:
         payload = {
